@@ -266,6 +266,12 @@
             border: 2px solid #FFD700;
         }
 
+        .cell.preview-invalid {
+            background: rgba(255, 0, 0, 0.5);
+            border-color: #ff0000;
+        }
+
+
         .hidden {
             display: none;
         }
@@ -627,25 +633,32 @@
 
         function showPiecePreview(startRow, startCol) {
             clearPiecePreview();
-            
             const piece = gameState.currentPieces[gameState.selectedPiece];
-            if (!canPlacePiece(startRow, startCol, piece)) return;
-            
+            if (!piece) return;
+
+            const canPlace = canPlacePiece(startRow, startCol, piece);
+
             for (let row = 0; row < piece.shape.length; row++) {
                 for (let col = 0; col < piece.shape[row].length; col++) {
                     if (piece.shape[row][col]) {
-                        const cell = document.querySelector(`[data-row="${startRow + row}"][data-col="${startCol + col}"]`);
-                        if (cell) cell.classList.add('preview');
+                        const boardRow = startRow + row;
+                        const boardCol = startCol + col;
+                        const cell = document.querySelector(`[data-row="${boardRow}"][data-col="${boardCol}"]`);
+                        if (cell) {
+                            cell.classList.add(canPlace ? 'preview' : 'preview-invalid');
+                        }
                     }
                 }
             }
         }
 
+
         function clearPiecePreview() {
-            document.querySelectorAll('.preview').forEach(cell => {
-                cell.classList.remove('preview');
+            document.querySelectorAll('.preview, .preview-invalid').forEach(cell => {
+                cell.classList.remove('preview', 'preview-invalid');
             });
         }
+
 
         function updateGameBoard() {
             for (let row = 0; row < 10; row++) {
